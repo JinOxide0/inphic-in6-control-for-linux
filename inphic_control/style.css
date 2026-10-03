@@ -1,0 +1,217 @@
+/* Inphic Control — 深色主题 */
+
+@define-color inphic_accent #4d8dff;
+@define-color inphic_bg #0b0e14;
+@define-color inphic_panel #0e121b;
+@define-color inphic_card #141a25;
+@define-color inphic_text #eef2f8;
+
+window.background {
+    background-color: @inphic_bg;
+    color: @inphic_text;
+}
+
+headerbar {
+    background-color: alpha(@inphic_bg, 0.85);
+    border-bottom: 1px solid alpha(#ffffff, 0.05);
+}
+
+headerbar label {
+    font-weight: 700;
+}
+
+/* ---------------------------------------------------------- 侧边栏 */
+.sidebar-panel {
+    background-color: @inphic_panel;
+    border-right: 1px solid alpha(#ffffff, 0.06);
+}
+
+.sidebar-heading {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: alpha(#ffffff, 0.42);
+}
+
+.sidebar-footer {
+    font-size: 11px;
+    color: alpha(#ffffff, 0.32);
+}
+
+.navigation-sidebar {
+    background: transparent;
+}
+
+.navigation-sidebar row {
+    border-radius: 10px;
+    margin: 2px 10px;
+    padding: 0;
+    transition: background-color 120ms ease;
+}
+
+.navigation-sidebar row:hover:not(:selected) {
+    background-color: alpha(#ffffff, 0.05);
+}
+
+.navigation-sidebar row:selected {
+    background-color: alpha(@inphic_accent, 0.16);
+    color: #ffffff;
+}
+
+.navigation-sidebar row:selected image {
+    color: @inphic_accent;
+}
+
+/* ---------------------------------------------------------- 首页卡片 */
+.hero-card {
+    background-image: linear-gradient(135deg, #1b2537 0%, #121a27 55%, #0e1520 100%);
+    border-radius: 18px;
+    border: 1px solid alpha(#ffffff, 0.07);
+    box-shadow: 0 12px 28px alpha(#000000, 0.35);
+}
+
+.hero-title {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.hero-subtitle {
+    font-size: 13px;
+    color: alpha(#ffffff, 0.55);
+}
+
+.hero-icon {
+    color: @inphic_accent;
+}
+
+.hero-battery {
+    font-size: 13px;
+    font-weight: 600;
+    color: alpha(#ffffff, 0.8);
+}
+
+.chip {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.chip-online {
+    background-color: alpha(#34d07a, 0.16);
+    color: #5ee08a;
+}
+
+.chip-offline {
+    background-color: alpha(#ffffff, 0.07);
+    color: alpha(#ffffff, 0.55);
+}
+
+.stat-tile {
+    background-color: @inphic_card;
+    border: 1px solid alpha(#ffffff, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.stat-icon {
+    color: @inphic_accent;
+}
+
+.stat-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: alpha(#ffffff, 0.52);
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 2px;
+}
+
+.stat-detail {
+    font-size: 12px;
+    color: alpha(#ffffff, 0.42);
+}
+
+/* ---------------------------------------------------------- 控件 */
+.value-label {
+    font-weight: 600;
+    font-feature-settings: "tnum";
+    color: alpha(#ffffff, 0.78);
+}
+
+.segment {
+    padding: 6px 14px;
+    font-weight: 600;
+}
+
+.color-button {
+    border-radius: 10px;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0;
+    border: 1px solid alpha(#ffffff, 0.25);
+}
+
+.shortcut-display {
+    font-size: 26px;
+    font-weight: 800;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: alpha(#ffffff, 0.05);
+    color: @inphic_accent;
+}
+
+.error-label {
+    color: #ff8080;
+}
+
+.status-ok {
+    color: #5ee08a;
+}
+
+.status-error {
+    color: #ff8080;
+}
+
+.battery-pill {
+    background: transparent;
+}
+
+/* 滚动页面留白更舒服 */
+preferencespage > scrolledwindow > viewport > box {
+    padding-top: 6px;
+    padding-bottom: 18px;
+}
+
+preferencesgroup list {
+    background-color: alpha(#ffffff, 0.025);
+    border-radius: 14px;
+}
+
+preferencesgroup list row {
+    background: transparent;
+}
+
+preferencesgroup > box > label {
+    font-weight: 700;
+}
+
+.slider highlight {
+    background-color: @inphic_accent;
+    border-radius: 999px;
+}
+
+.slider trough {
+    background-color: alpha(#ffffff, 0.10);
+    min-height: 6px;
+    border-radius: 999px;
+}
+
+.slider slider {
+    min-width: 16px;
+    min-height: 16px;
+    margin: -6px 0;
+}

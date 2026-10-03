@@ -1,0 +1,8 @@
+#!/bin/sh
+# Inphic Control launcher
+# 根据自身路径推导安装前缀, 兼容 /usr (发行版包) 与 /app (Flatpak) 等布局。
+SELF=$(readlink -f "$0")
+PREFIX=$(dirname "$(dirname "$SELF")")
+PYTHONPATH="$PREFIX/share/inphic-control${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH
+exec /usr/bin/python3 -m inphic_control "$@"

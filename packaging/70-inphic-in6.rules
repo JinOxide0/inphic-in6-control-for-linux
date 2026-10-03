@@ -1,0 +1,3 @@
+# Inphic IN6 (8K 接收器 1d57:fa65 / 有线模式) hidraw 权限
+# 给当前座位用户授予 hidraw 访问权限, 无需 root 运行控制软件。
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1d57", MODE="0660", TAG+="uaccess"

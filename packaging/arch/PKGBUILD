@@ -1,0 +1,18 @@
+# Maintainer: Inphic Control contributors <noreply@example.com>
+pkgname=inphic-control
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Inphic IN6 (8K) gaming mouse control panel (GTK4/libadwaita)"
+arch=('any')
+url="https://github.com/inphic-control/inphic-control"
+license=('MIT')
+depends=('python' 'python-gobject' 'python-cairo' 'gtk4' 'libadwaita')
+makedepends=('make')
+install="$pkgname.install"
+source=("$pkgname-$pkgver.tar.gz")
+# 本地/开发构建使用 SKIP; 发布 AUR 前请先运行 `updpkgsums` 写入真实校验和
+sha256sums=('SKIP')
+
+package() {
+    make install DESTDIR="$pkgdir" PREFIX=/usr
+}

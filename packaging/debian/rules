@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+# 纯 Python 项目: 跳过 debhelper 自动检测的构建步骤, 直接用 Makefile 安装
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_clean:
+override_dh_auto_test:
+override_dh_auto_install:
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp

@@ -1,0 +1,16 @@
+[Desktop Entry]
+Type=Application
+Name=Inphic Control
+Name[zh_CN]=Inphic 鼠标控制
+GenericName=Gaming Mouse Configurator
+GenericName[zh_CN]=游戏鼠标控制面板
+Comment=DPI, polling rate, lighting and buttons for Inphic IN6
+Comment[zh_CN]=在 Linux 上配置 Inphic IN6 的 DPI、轮询率、灯光与按键
+Exec=inphic-control
+Icon=inphic-control
+Terminal=false
+Categories=Utility;Settings;HardwareSettings;
+Keywords=mouse;inphic;dpi;polling;8k;gaming;
+Keywords[zh_CN]=鼠标;控制;驱动;宏;
+StartupNotify=true
+StartupWMClass=io.github.inphic.InphicControl

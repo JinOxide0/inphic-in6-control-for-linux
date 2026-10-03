@@ -1,0 +1,5 @@
+usr/bin/inphic-control
+usr/share/inphic-control
+usr/share/applications/inphic-control.desktop
+usr/share/icons/hicolor/scalable/apps/inphic-control.svg
+usr/lib/udev/rules.d/70-inphic-in6.rules

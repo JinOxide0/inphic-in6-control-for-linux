@@ -1,0 +1,26 @@
+app-id: io.github.inphic.InphicControl
+runtime: org.gnome.Platform
+# 与系统已安装的运行时保持一致 (flatpak list | grep org.gnome.Platform)
+runtime-version: '49'
+sdk: org.gnome.Sdk
+command: inphic-control
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # 访问 /dev/hidraw* (厂商 HID 接口)。Flatpak 无法安装 udev 规则,
+  # 宿主机仍需安装 70-inphic-in6.rules (见 packaging/README.md)。
+  - --device=all
+  - --filesystem=/run/udev:ro
+modules:
+  - name: inphic-control
+    buildsystem: simple
+    build-commands:
+      - make install PREFIX=/app INSTALL_UDEV=0
+      - mv /app/share/applications/inphic-control.desktop /app/share/applications/io.github.inphic.InphicControl.desktop
+      - mv /app/share/icons/hicolor/scalable/apps/inphic-control.svg /app/share/icons/hicolor/scalable/apps/io.github.inphic.InphicControl.svg
+      - desktop-file-edit --set-key=Icon --set-value=io.github.inphic.InphicControl /app/share/applications/io.github.inphic.InphicControl.desktop
+    sources:
+      - type: dir
+        path: ../..
