@@ -4,6 +4,7 @@ __pycache__/
 
 # 构建中间产物
 build/
+dist/
 packaging/arch/pkg/
 packaging/arch/*.tar.gz
 

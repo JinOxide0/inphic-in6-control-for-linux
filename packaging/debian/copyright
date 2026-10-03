@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: inphic-control
-Source: https://github.com/inphic-control/inphic-control
+Source: https://github.com/JinOxide0/inphic-in6-control-for-linux
 
 Files: *
 Copyright: 2026 Inphic Control contributors

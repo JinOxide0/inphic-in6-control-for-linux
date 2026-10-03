@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Inphic IN6 (8K) gaming mouse control panel for Linux
 Summary(zh_CN): Inphic IN6 (8K) 游戏鼠标 Linux 控制面板
 License:        MIT
-URL:            https://github.com/inphic-control/inphic-control
+URL:            https://github.com/JinOxide0/inphic-in6-control-for-linux
 BuildArch:      noarch
 BuildRequires:  make
 

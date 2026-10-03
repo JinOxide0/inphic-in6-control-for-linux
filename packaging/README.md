@@ -65,7 +65,7 @@ sudo pacman -U packaging/arch/inphic-control-*.pkg.tar.zst
   `podman run --rm -v "$PWD:/src:ro" archlinux bash -c 'pacman -Sy --noconfirm --needed base-devel >/dev/null && cp -r /src /tmp/build && useradd -m b && chown -R b /tmp/build && su b -c "cd /tmp/build && ./packaging/build-arch.sh" && cat /tmp/build/packaging/arch/*.pkg.tar.zst' > inphic-control.pkg.tar.zst`
 - 发布 **AUR**：
   1. 将源码发布到 GitHub Release，并把 `source` 改为
-     `("$pkgname-$pkgver.tar.gz::https://github.com/<user>/inphic-control/archive/refs/tags/v$pkgver.tar.gz")`
+     `("$pkgname-$pkgver.tar.gz::https://github.com/JinOxide0/inphic-in6-control-for-linux/archive/refs/tags/v$pkgver.tar.gz")`
   2. `updpkgsums` 写入真实校验和
   3. `makepkg --printsrcinfo > .SRCINFO`，连同 `PKGBUILD`、`.install` 推送到 AUR
 
