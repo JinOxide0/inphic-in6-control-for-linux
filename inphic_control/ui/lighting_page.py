@@ -8,6 +8,7 @@ gi.require_version("Adw", "1")
 
 from gi.repository import Adw, Gdk, Gtk
 
+from ..i18n import _
 from .widgets import color_button, slider, value_label
 
 MODES: list[tuple[str, str]] = [
@@ -29,20 +30,22 @@ class LightingPage(Adw.PreferencesPage):
         self._syncing = False
 
         mode_group = Adw.PreferencesGroup(
-            title="灯光模式",
-            description="「DPI 常亮 / DPI 呼吸」会显示当前 DPI 档位的颜色",
+            title=_("灯光模式"),
+            description=_("「DPI 常亮 / DPI 呼吸」会显示当前 DPI 档位的颜色"),
         )
         self.add(mode_group)
 
-        self.mode_row = Adw.ComboRow(title="模式")
-        self.mode_row.set_model(Gtk.StringList.new([label for _, label in MODES]))
+        self.mode_row = Adw.ComboRow(title=_("模式"))
+        self.mode_row.set_model(Gtk.StringList.new([_(label) for _key, label in MODES]))
         self.mode_row.connect("notify::selected", self._on_mode_changed)
         mode_group.add(self.mode_row)
 
-        color_group = Adw.PreferencesGroup(title="颜色")
+        color_group = Adw.PreferencesGroup(title=_("颜色"))
         self.add(color_group)
 
-        self.color_row = Adw.ActionRow(title="灯光颜色", subtitle="仅常亮 / 呼吸模式使用")
+        self.color_row = Adw.ActionRow(
+            title=_("灯光颜色"), subtitle=_("仅常亮 / 呼吸模式使用")
+        )
         self.color_hex = value_label("#0000FF", 80)
         self.color_button = color_button("#0000FF", size=28)
         self.color_button.connect("notify::rgba", self._on_color_changed)
@@ -50,10 +53,12 @@ class LightingPage(Adw.PreferencesPage):
         self.color_row.add_suffix(self.color_button)
         color_group.add(self.color_row)
 
-        level_group = Adw.PreferencesGroup(title="亮度与速度")
+        level_group = Adw.PreferencesGroup(title=_("亮度与速度"))
         self.add(level_group)
 
-        self.level_row = Adw.ActionRow(title="亮度", subtitle="1 (最暗) - 8 (最亮)")
+        self.level_row = Adw.ActionRow(
+            title=_("亮度"), subtitle=_("1 (最暗) - 8 (最亮)")
+        )
         self.level_label = value_label("2", 44)
         self.level_scale = slider(1, 8, 1, 2)
         self.level_scale.set_size_request(200, -1)
@@ -115,11 +120,11 @@ class LightingPage(Adw.PreferencesPage):
         speed = mode in SPEED_MODES
         self.level_row.set_sensitive(mode != "off")
         if speed:
-            self.level_row.set_title("呼吸速度")
-            self.level_row.set_subtitle("1 (最慢) - 8 (最快)")
+            self.level_row.set_title(_("呼吸速度"))
+            self.level_row.set_subtitle(_("1 (最慢) - 8 (最快)"))
         else:
-            self.level_row.set_title("亮度")
-            self.level_row.set_subtitle("1 (最暗) - 8 (最亮)")
+            self.level_row.set_title(_("亮度"))
+            self.level_row.set_subtitle(_("1 (最暗) - 8 (最亮)"))
         self._syncing = True
         self.level_scale.set_value(cfg.speed if speed else cfg.brightness)
         self.level_label.set_label(str(cfg.speed if speed else cfg.brightness))

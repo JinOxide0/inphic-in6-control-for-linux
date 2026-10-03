@@ -8,6 +8,7 @@ gi.require_version("Adw", "1")
 
 from gi.repository import Adw, Gtk
 
+from ..i18n import _
 from .widgets import color_button, rgba_hex, slider, value_label
 
 DPI_MIN, DPI_MAX, DPI_STEP = 50, 26000, 50
@@ -26,8 +27,8 @@ class DpiPage(Adw.PreferencesPage):
 
         # ---------------------------------------------------- 当前档位
         active_group = Adw.PreferencesGroup(
-            title="当前档位",
-            description="按鼠标底部的 DPI 键可在启用的档位间切换",
+            title=_("当前档位"),
+            description=_("按鼠标底部的 DPI 键可在启用的档位间切换"),
         )
         self.add(active_group)
 
@@ -60,16 +61,18 @@ class DpiPage(Adw.PreferencesPage):
 
         # ---------------------------------------------------- 档位列表
         stages = Adw.PreferencesGroup(
-            title="DPI 档位",
-            description=f"范围 {DPI_MIN} - {DPI_MAX}, 步进 {DPI_STEP}",
+            title=_("DPI 档位"),
+            description=_("范围 {minimum} - {maximum}, 步进 {step}").format(
+                minimum=DPI_MIN, maximum=DPI_MAX, step=DPI_STEP
+            ),
         )
         self.add(stages)
 
         for i in range(8):
-            row = Adw.ActionRow(title=f"档位 {i + 1}")
+            row = Adw.ActionRow(title=_("档位 {index}").format(index=i + 1))
 
             color = color_button("#FFFFFF")
-            color.set_tooltip_text("该档位的指示灯颜色")
+            color.set_tooltip_text(_("该档位的指示灯颜色"))
             color.connect("notify::rgba", self._on_color_changed, i)
             row.add_suffix(color)
             self.color_buttons.append(color)
@@ -118,7 +121,7 @@ class DpiPage(Adw.PreferencesPage):
             self._syncing = True
             switch.set_active(True)
             self._syncing = False
-            self.window.toast("至少需要启用一个 DPI 档位")
+            self.window.toast(_("至少需要启用一个 DPI 档位"))
             return
         cfg.dpi_enabled[index] = enabled
         if not enabled and cfg.active_stage == index + 1:
@@ -152,7 +155,11 @@ class DpiPage(Adw.PreferencesPage):
     def _update_active_label(self) -> None:
         cfg = self.window.config
         stage = max(1, min(8, cfg.active_stage))
-        self.active_label.set_label(f"当前: 档位 {stage} · {cfg.dpi_values[stage - 1]} DPI")
+        self.active_label.set_label(
+            _("当前: 档位 {stage} · {dpi} DPI").format(
+                stage=stage, dpi=cfg.dpi_values[stage - 1]
+            )
+        )
 
     def refresh(self) -> None:
         cfg = self.window.config

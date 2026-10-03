@@ -10,6 +10,7 @@ from gi.repository import Adw, Gdk, Gtk
 
 from .. import keys, protocol as P
 from ..config import MacroDef
+from ..i18n import _
 
 TRIGGER_LABELS = [
     "循环次数播放",
@@ -24,7 +25,7 @@ class _KeyCaptureDialog(Adw.Dialog):
 
     def __init__(self):
         super().__init__()
-        self.set_title("捕获按键")
+        self.set_title(_("捕获按键"))
         self.set_content_width(380)
         self.set_content_height(230)
         self.usage: int | None = None
@@ -35,10 +36,10 @@ class _KeyCaptureDialog(Adw.Dialog):
         header.set_show_end_title_buttons(False)
         toolbar.add_top_bar(header)
 
-        cancel = Gtk.Button(label="取消")
+        cancel = Gtk.Button(label=_("取消"))
         cancel.connect("clicked", lambda *_: self.close())
         header.pack_start(cancel)
-        ok = Gtk.Button(label="确定")
+        ok = Gtk.Button(label=_("确定"))
         ok.add_css_class("suggested-action")
         ok.connect("clicked", self._on_ok)
         header.pack_end(ok)
@@ -50,7 +51,7 @@ class _KeyCaptureDialog(Adw.Dialog):
         body.set_margin_end(24)
         toolbar.set_content(body)
 
-        hint = Gtk.Label(label="按下要录制的按键（A-Z、0-9、F1-F24 等）")
+        hint = Gtk.Label(label=_("按下要录制的按键（A-Z、0-9、F1-F24 等）"))
         hint.add_css_class("dim-label")
         body.append(hint)
 
@@ -83,7 +84,7 @@ class _KeyCaptureDialog(Adw.Dialog):
             return True
         usage = keys.keyval_to_usage(keyval)
         if usage is None or 224 <= usage <= 231:
-            self.warning.set_label("该按键不支持，请换一个")
+            self.warning.set_label(_("该按键不支持，请换一个"))
             return True
         self.usage = usage
         self.display.set_label(keys.describe_key(usage))
@@ -92,7 +93,7 @@ class _KeyCaptureDialog(Adw.Dialog):
 
     def _on_ok(self, _btn) -> None:
         if self.usage is None:
-            self.warning.set_label("请先按下一个按键")
+            self.warning.set_label(_("请先按下一个按键"))
             return
         self.close()
 
@@ -102,7 +103,7 @@ class _MoveDialog(Adw.Dialog):
 
     def __init__(self, x: int = 0, y: int = 0):
         super().__init__()
-        self.set_title("鼠标移动")
+        self.set_title(_("鼠标移动"))
         self.set_content_width(360)
         self.set_content_height(260)
         self.result: tuple[int, int] | None = None
@@ -113,10 +114,10 @@ class _MoveDialog(Adw.Dialog):
         header.set_show_end_title_buttons(False)
         toolbar.add_top_bar(header)
 
-        cancel = Gtk.Button(label="取消")
+        cancel = Gtk.Button(label=_("取消"))
         cancel.connect("clicked", lambda *_: self.close())
         header.pack_start(cancel)
-        ok = Gtk.Button(label="确定")
+        ok = Gtk.Button(label=_("确定"))
         ok.add_css_class("suggested-action")
         ok.connect("clicked", self._on_ok)
         header.pack_end(ok)
@@ -133,10 +134,10 @@ class _MoveDialog(Adw.Dialog):
         self.y_spin = Gtk.SpinButton.new_with_range(-32768, 32767, 1)
         self.y_spin.set_value(y)
 
-        row_x = Adw.ActionRow(title="水平移动 X", subtitle="-32768 ~ 32767 (像素)")
+        row_x = Adw.ActionRow(title=_("水平移动 X"), subtitle=_("-32768 ~ 32767 (像素)"))
         row_x.add_suffix(self.x_spin)
         body.append(row_x)
-        row_y = Adw.ActionRow(title="垂直移动 Y", subtitle="-32768 ~ 32767 (像素)")
+        row_y = Adw.ActionRow(title=_("垂直移动 Y"), subtitle=_("-32768 ~ 32767 (像素)"))
         row_y.add_suffix(self.y_spin)
         body.append(row_y)
 
@@ -170,7 +171,7 @@ class _ActionRow(Gtk.ListBoxRow):
         delay = Gtk.SpinButton.new_with_range(1, 25500, 10)
         delay.set_value(int(action.get("delay", 10)))
         delay.set_width_chars(5)
-        delay.set_tooltip_text("与上一动作的间隔 (毫秒)")
+        delay.set_tooltip_text(_("与上一动作的间隔 (毫秒)"))
         delay.connect("value-changed", self._on_delay)
         box.append(delay)
 
@@ -180,7 +181,7 @@ class _ActionRow(Gtk.ListBoxRow):
 
         delete = Gtk.Button.new_from_icon_name("edit-delete-symbolic")
         delete.add_css_class("flat")
-        delete.set_tooltip_text("删除此动作")
+        delete.set_tooltip_text(_("删除此动作"))
         delete.connect("clicked", self._on_delete)
         box.append(delete)
 
@@ -189,11 +190,13 @@ class _ActionRow(Gtk.ListBoxRow):
     def _update_label(self, action: dict) -> None:
         if action["kind"] == "key":
             name = keys.describe_key(int(action.get("key", 0)))
-            state = "按下" if action.get("down", True) else "抬起"
+            state = _("按下") if action.get("down", True) else _("抬起")
             self.label.set_label(f"{state} {name}")
         else:
             self.label.set_label(
-                f"移动 ({int(action.get('x', 0))}, {int(action.get('y', 0))})"
+                _("移动 ({x}, {y})").format(
+                    x=int(action.get("x", 0)), y=int(action.get("y", 0))
+                )
             )
 
     def _on_delay(self, spin: Gtk.SpinButton) -> None:
@@ -212,7 +215,7 @@ class MacroDialog(Adw.Dialog):
         super().__init__()
         self.window = window
         self.macro_id = macro_id
-        self.set_title(f"编辑宏 — {button_name}")
+        self.set_title(_("编辑宏 — {button}").format(button=button_name))
         self.set_content_width(560)
         self.set_content_height(520)
 
@@ -227,10 +230,10 @@ class MacroDialog(Adw.Dialog):
         header.set_show_end_title_buttons(False)
         toolbar.add_top_bar(header)
 
-        cancel = Gtk.Button(label="取消")
+        cancel = Gtk.Button(label=_("取消"))
         cancel.connect("clicked", lambda *_: self.close())
         header.pack_start(cancel)
-        save = Gtk.Button(label="保存并应用")
+        save = Gtk.Button(label=_("保存并应用"))
         save.add_css_class("suggested-action")
         save.connect("clicked", self._on_save)
         header.pack_end(save)
@@ -243,20 +246,20 @@ class MacroDialog(Adw.Dialog):
         toolbar.set_content(content)
 
         # 触发方式 + 循环次数
-        self.trigger_row = Adw.ComboRow(title="触发方式")
-        self.trigger_row.set_model(Gtk.StringList.new(TRIGGER_LABELS))
+        self.trigger_row = Adw.ComboRow(title=_("触发方式"))
+        self.trigger_row.set_model(Gtk.StringList.new([_(l) for l in TRIGGER_LABELS]))
         self.trigger_row.set_selected(self.trigger)
         self.trigger_row.connect("notify::selected", self._on_trigger)
         content.append(self.trigger_row)
 
         self.loops_row = Adw.SpinRow.new_with_range(1, 255, 1)
-        self.loops_row.set_title("循环次数")
-        self.loops_row.set_subtitle("触发方式为「循环次数播放」时生效")
+        self.loops_row.set_title(_("循环次数"))
+        self.loops_row.set_subtitle(_("触发方式为「循环次数播放」时生效"))
         self.loops_row.set_value(self.loops)
         self.loops_row.connect("notify::value", self._on_loops)
         content.append(self.loops_row)
 
-        hint = Gtk.Label(label="动作列表（每条动作的间隔 = 与上一动作的时间）")
+        hint = Gtk.Label(label=_("动作列表（每条动作的间隔 = 与上一动作的时间）"))
         hint.add_css_class("dim-label")
         hint.set_xalign(0)
         hint.set_margin_top(6)
@@ -264,10 +267,10 @@ class MacroDialog(Adw.Dialog):
 
         # 添加按钮 (置于列表上方, 始终可见可点)
         add_row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        add_key = Gtk.Button(label="＋ 按键")
+        add_key = Gtk.Button(label=_("＋ 按键"))
         add_key.connect("clicked", self._on_add_key)
         add_row.append(add_key)
-        add_move = Gtk.Button(label="＋ 鼠标移动")
+        add_move = Gtk.Button(label=_("＋ 鼠标移动"))
         add_move.connect("clicked", self._on_add_move)
         add_row.append(add_move)
         content.append(add_row)
@@ -283,7 +286,7 @@ class MacroDialog(Adw.Dialog):
         self.listbox.set_selection_mode(Gtk.SelectionMode.NONE)
         scroll.set_child(self.listbox)
 
-        self.empty_label = Gtk.Label(label="还没有动作，点击上方按钮添加")
+        self.empty_label = Gtk.Label(label=_("还没有动作，点击上方按钮添加"))
         self.empty_label.add_css_class("dim-label")
         self.empty_label.set_margin_top(8)
         content.append(self.empty_label)
@@ -346,7 +349,7 @@ class MacroDialog(Adw.Dialog):
     # ------------------------------------------------------------ 保存
     def _on_save(self, _btn) -> None:
         if not self.actions:
-            self.window.toast("宏至少需要一个动作")
+            self.window.toast(_("宏至少需要一个动作"))
             return
         window = self.window
         macro = MacroDef(

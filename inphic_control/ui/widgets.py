@@ -10,6 +10,7 @@ gi.require_version("Adw", "1")
 
 from gi.repository import Adw, Gdk, GObject, Gtk
 
+from ..i18n import _
 from ..protocol import (
     BATTERY_CHARGING,
     BATTERY_FULL,
@@ -19,10 +20,10 @@ from ..protocol import (
 
 def battery_text(status: int | None, level: int | None) -> str:
     if status == BATTERY_FULL:
-        return "已充满"
+        return _("已充满")
     if status == BATTERY_CHARGING:
-        return "充电中"
-    return "使用中"
+        return _("充电中")
+    return _("使用中")
 
 
 class BatteryPill(Gtk.DrawingArea):
@@ -128,17 +129,17 @@ class HeroCard(Gtk.Box):
         info.set_hexpand(True)
         inner.append(info)
 
-        self.title = Gtk.Label(label="未检测到设备")
+        self.title = Gtk.Label(label=_("未检测到设备"))
         self.title.set_xalign(0)
         self.title.add_css_class("hero-title")
         info.append(self.title)
 
-        self.subtitle = Gtk.Label(label="请将 8K 接收器插入 USB 端口")
+        self.subtitle = Gtk.Label(label=_("请将 8K 接收器插入 USB 端口"))
         self.subtitle.set_xalign(0)
         self.subtitle.add_css_class("hero-subtitle")
         info.append(self.subtitle)
 
-        self.conn_chip = Gtk.Label(label="未连接")
+        self.conn_chip = Gtk.Label(label=_("未连接"))
         self.conn_chip.add_css_class("chip")
         self.conn_chip.add_css_class("chip-offline")
         self.conn_chip.set_halign(Gtk.Align.START)
@@ -161,15 +162,15 @@ class HeroCard(Gtk.Box):
 
     def set_connected(self, connected: bool, label: str = "", wired: bool = False) -> None:
         if connected:
-            self.title.set_label(label or "Inphic 设备")
-            self.subtitle.set_label("8K 接收器" if not wired else "USB 有线连接")
-            self.conn_chip.set_label("已连接")
+            self.title.set_label(label or _("Inphic 设备"))
+            self.subtitle.set_label(_("8K 接收器") if not wired else _("USB 有线连接"))
+            self.conn_chip.set_label(_("已连接"))
             self.conn_chip.remove_css_class("chip-offline")
             self.conn_chip.add_css_class("chip-online")
         else:
-            self.title.set_label("未检测到设备")
-            self.subtitle.set_label("请使用 8K 接收器或有线连接（蓝牙模式不支持配置）")
-            self.conn_chip.set_label("未连接")
+            self.title.set_label(_("未检测到设备"))
+            self.subtitle.set_label(_("请使用 8K 接收器或有线连接（蓝牙模式不支持配置）"))
+            self.conn_chip.set_label(_("未连接"))
             self.conn_chip.remove_css_class("chip-online")
             self.conn_chip.add_css_class("chip-offline")
 
@@ -247,7 +248,7 @@ class ShortcutDialog(Adw.Dialog):
 
     def __init__(self, mods: int = 0, usage: int = 0):
         super().__init__()
-        self.set_title("设置键盘快捷键")
+        self.set_title(_("设置键盘快捷键"))
         self.set_content_width(420)
         self.set_content_height(260)
         self._mods = mods
@@ -260,11 +261,11 @@ class ShortcutDialog(Adw.Dialog):
         header.set_show_end_title_buttons(False)
         toolbar.add_top_bar(header)
 
-        cancel = Gtk.Button(label="取消")
+        cancel = Gtk.Button(label=_("取消"))
         cancel.connect("clicked", lambda *_: self.close())
         header.pack_start(cancel)
 
-        ok = Gtk.Button(label="确定")
+        ok = Gtk.Button(label=_("确定"))
         ok.add_css_class("suggested-action")
         ok.connect("clicked", self._on_ok)
         header.pack_end(ok)
@@ -276,7 +277,7 @@ class ShortcutDialog(Adw.Dialog):
         body.set_margin_end(28)
         toolbar.set_content(body)
 
-        hint = Gtk.Label(label="请直接按下想要绑定的按键组合")
+        hint = Gtk.Label(label=_("请直接按下想要绑定的按键组合"))
         hint.add_css_class("dim-label")
         body.append(hint)
 
@@ -322,7 +323,7 @@ class ShortcutDialog(Adw.Dialog):
             return True
         usage = keys.keyval_to_usage(keyval)
         if usage is None or 224 <= usage <= 231:
-            self.warning.set_label("该按键不支持，请换一个")
+            self.warning.set_label(_("该按键不支持，请换一个"))
             return True
         self.warning.set_label("")
         self._mods = keys.modifier_mask(state)
@@ -332,7 +333,7 @@ class ShortcutDialog(Adw.Dialog):
 
     def _on_ok(self, _btn) -> None:
         if self._usage == 0:
-            self.warning.set_label("请先按下一个按键")
+            self.warning.set_label(_("请先按下一个按键"))
             return
         self.result = (self._mods, self._usage)
         self.close()

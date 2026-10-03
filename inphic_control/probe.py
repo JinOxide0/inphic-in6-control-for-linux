@@ -9,17 +9,20 @@ import time
 from . import protocol as P
 from .config import Config
 from .device import InphicDevice, discover
+from .i18n import _, set_language
 
 
 def _print_devices() -> list:
     infos = discover()
     if not infos:
-        print("未发现可配置的 Inphic 设备 (1d57:* 且带厂商接口)")
+        print(_("未发现可配置的 Inphic 设备 (1d57:* 且带厂商接口)"))
     for info in infos:
-        ok = "可访问" if info.accessible else "无权限 (需要 udev 规则)"
+        ok = _("可访问") if info.accessible else _("无权限 (需要 udev 规则)")
         print(
             f"* {info.hidraw}  {info.vid:04x}:{info.pid:04x}  {info.label}\n"
-            f"    接口 {info.interface} · HID 名 {info.name} · {ok}"
+            + _("    接口 {interface} · HID 名 {name} · {status}").format(
+                interface=info.interface, name=info.name, status=ok
+            )
         )
     return infos
 
@@ -31,9 +34,9 @@ def run_probe(seconds: float, apply_config: bool) -> int:
     info = infos[0]
     if not info.accessible:
         print(
-            "\n没有访问权限。临时授权:\n"
+            "\n" + _("没有访问权限。临时授权:") + "\n"
             f"  sudo setfacl -m u:$USER:rw {info.hidraw}\n"
-            "或安装 RPM 后重新插拔接收器 (包含 udev 规则)。"
+            + _("或安装软件包后重新插拔接收器 (包含 udev 规则)。")
         )
         return 3
 
@@ -69,13 +72,19 @@ def run_probe(seconds: float, apply_config: bool) -> int:
             ]
             for packet in packets:
                 device.send(packet)
-                print(f"已发送 {len(packet):>2} 字节: {packet[:12].hex(' ')} ...")
+                print(
+                    _("已发送 {length:>2} 字节: {data} ...").format(
+                        length=len(packet), data=packet[:12].hex(" ")
+                    )
+                )
                 time.sleep(1.5)
 
-        print(f"\n监听设备事件 {seconds:.0f} 秒 (Ctrl+C 退出)...")
+        print("\n" + _("监听设备事件 {seconds:.0f} 秒 (Ctrl+C 退出)...").format(
+            seconds=seconds
+        ))
         deadline = time.monotonic() + seconds
         while time.monotonic() < deadline:
-            ready, _, _ = select.select([device.fileno()], [], [], 0.5)
+            ready, _wlist, _xlist = select.select([device.fileno()], [], [], 0.5)
             if not ready:
                 continue
             data = device.read()
@@ -84,28 +93,40 @@ def run_probe(seconds: float, apply_config: bool) -> int:
             event = P.parse_event(data)
             stamp = time.strftime("%H:%M:%S")
             if event is None:
-                print(f"[{stamp}] 原始: {data[:16].hex(' ')}")
+                print(f"[{stamp}] " + _("原始: {data}").format(data=data[:16].hex(" ")))
             elif event.kind == "battery":
                 print(
-                    f"[{stamp}] 电量: {event.battery_level}% "
-                    f"(状态 {event.battery_status})"
+                    f"[{stamp}] "
+                    + _("电量: {level}% (状态 {status})").format(
+                        level=event.battery_level, status=event.battery_status
+                    )
                 )
             elif event.kind == "ack":
-                print(f"[{stamp}] ACK: {'成功' if event.ack_ok else '失败'}")
+                print(
+                    f"[{stamp}] "
+                    + (_("ACK: 成功") if event.ack_ok else _("ACK: 失败"))
+                )
             elif event.kind == "dpi_cycle":
-                print(f"[{stamp}] DPI 切换到档位 {event.stage}")
+                print(
+                    f"[{stamp}] "
+                    + _("DPI 切换到档位 {stage}").format(stage=event.stage)
+                )
             else:
-                print(f"[{stamp}] 其他事件: {event.raw[:16].hex(' ')}")
+                print(
+                    f"[{stamp}] "
+                    + _("其他事件: {data}").format(data=event.raw[:16].hex(" "))
+                )
     finally:
         device.close()
     return 0
 
 
 def main(argv: list[str] | None = None) -> int:
+    set_language(Config.load().language)
     parser = argparse.ArgumentParser(prog="inphic-control --probe")
-    parser.add_argument("--seconds", type=float, default=8.0, help="监听时长")
+    parser.add_argument("--seconds", type=float, default=8.0, help=_("监听时长"))
     parser.add_argument(
-        "--apply", action="store_true", help="先写入一次本地配置再监听"
+        "--apply", action="store_true", help=_("先写入一次本地配置再监听")
     )
     args = parser.parse_args(argv)
     return run_probe(args.seconds, args.apply)

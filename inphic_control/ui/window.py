@@ -10,9 +10,11 @@ gi.require_version("Adw", "1")
 
 from gi.repository import Adw, GLib, Gtk
 
+from .. import __version__
 from .. import protocol as P
 from ..config import Config
 from ..device_manager import DeviceManager
+from ..i18n import _
 from .about_page import AboutPage
 from .buttons_page import ButtonsPage
 from .dashboard import DashboardPage
@@ -21,7 +23,7 @@ from .lighting_page import LightingPage
 from .performance_page import PerformancePage
 from .widgets import BatteryPill
 
-APP_VERSION = "0.3.0"
+APP_VERSION = __version__
 
 
 class MainWindow(Adw.ApplicationWindow):
@@ -49,7 +51,7 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.sidebar_toggle = Gtk.ToggleButton()
         self.sidebar_toggle.set_icon_name("sidebar-show-symbolic")
-        self.sidebar_toggle.set_tooltip_text("显示/隐藏侧边栏")
+        self.sidebar_toggle.set_tooltip_text(_("显示/隐藏侧边栏"))
         self.header.pack_start(self.sidebar_toggle)
 
         self.status_stack = Gtk.Stack()
@@ -72,13 +74,13 @@ class MainWindow(Adw.ApplicationWindow):
 
         self.mini_battery = BatteryPill(48, 20)
         self.mini_battery.set_margin_start(8)
-        self.mini_battery.set_tooltip_text("鼠标电量")
+        self.mini_battery.set_tooltip_text(_("鼠标电量"))
         self.mini_battery.set_visible(False)
         self.header.pack_end(self.mini_battery)
 
         apply_button = Gtk.Button()
         apply_button.set_icon_name("document-save-symbolic")
-        apply_button.set_tooltip_text("重新应用全部设置")
+        apply_button.set_tooltip_text(_("重新应用全部设置"))
         apply_button.add_css_class("flat")
         apply_button.connect("clicked", lambda *_: self.push_all(manual=True))
         self.header.pack_end(apply_button)
@@ -94,7 +96,7 @@ class MainWindow(Adw.ApplicationWindow):
         sidebar.add_css_class("sidebar-panel")
         self.split.set_sidebar(sidebar)
 
-        sidebar_header = Gtk.Label(label="设置")
+        sidebar_header = Gtk.Label(label=_("设置"))
         sidebar_header.set_xalign(0)
         sidebar_header.add_css_class("sidebar-heading")
         sidebar_header.set_margin_top(14)
@@ -121,12 +123,12 @@ class MainWindow(Adw.ApplicationWindow):
         self.split.set_content(self.stack)
 
         self.pages: dict[str, Gtk.Widget] = {}
-        self._add_page("dashboard", "概览", "input-mouse-symbolic", DashboardPage(self))
+        self._add_page("dashboard", _("概览"), "input-mouse-symbolic", DashboardPage(self))
         self._add_page("dpi", "DPI", "speedometer-symbolic", DpiPage(self))
-        self._add_page("performance", "性能", "power-profile-performance-symbolic", PerformancePage(self))
-        self._add_page("lighting", "灯光", "color-select-symbolic", LightingPage(self))
-        self._add_page("buttons", "按键", "input-keyboard-symbolic", ButtonsPage(self))
-        self._add_page("about", "关于", "help-about-symbolic", AboutPage(self))
+        self._add_page("performance", _("性能"), "power-profile-performance-symbolic", PerformancePage(self))
+        self._add_page("lighting", _("灯光"), "color-select-symbolic", LightingPage(self))
+        self._add_page("buttons", _("按键"), "input-keyboard-symbolic", ButtonsPage(self))
+        self._add_page("about", _("关于"), "help-about-symbolic", AboutPage(self))
 
         self.split.bind_property("show-sidebar", self.sidebar_toggle, "active", 2)
 
@@ -190,14 +192,14 @@ class MainWindow(Adw.ApplicationWindow):
     def _on_ack(self, _mgr, _command, ok: bool) -> None:
         self._set_status("ok" if ok else "error", reset_after=1.8)
         if not ok:
-            self.toast("鼠标可能休眠中，已安排自动重试（唤醒后自动应用）")
+            self.toast(_("鼠标可能休眠中，已安排自动重试（唤醒后自动应用）"))
 
     # ------------------------------------------------------------ 设备
     def _on_device_changed(self, _mgr, connected: bool, info) -> None:
         dashboard = self.pages["dashboard"]
         if connected and info is not None:
             dashboard.set_device(info)
-            self.toast(f"已连接 {info.label}")
+            self.toast(_("已连接 {label}").format(label=info.label))
         else:
             dashboard.set_device(None)
             self.mini_battery.set_visible(False)
@@ -301,11 +303,18 @@ class MainWindow(Adw.ApplicationWindow):
     def push_all(self, manual: bool = False) -> None:
         if not self.manager.connected:
             if manual:
-                self.toast("设备未连接")
+                self.toast(_("设备未连接"))
             return
         self.save_config()
         self.manager.send_many(
             [self.build_dpi(), self.build_polling(), self.build_lighting(), self.build_buttons()]
         )
         if manual:
-            self.toast("已重新应用全部设置")
+            self.toast(_("已重新应用全部设置"))
+
+    # ------------------------------------------------------------ 语言
+    def set_language(self, preference: str) -> None:
+        """转交应用对象切换语言 (会重建窗口)."""
+        app = self.get_application()
+        if app is not None:
+            app.apply_language(preference)

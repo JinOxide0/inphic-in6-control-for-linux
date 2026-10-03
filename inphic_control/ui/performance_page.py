@@ -8,6 +8,7 @@ gi.require_version("Adw", "1")
 
 from gi.repository import Adw, Gtk
 
+from ..i18n import _
 from .widgets import slider, value_label
 
 POLLING_RATES = [125, 250, 500, 1000, 2000, 4000, 8000]
@@ -22,8 +23,8 @@ class PerformancePage(Adw.PreferencesPage):
 
         # ---------------------------------------------------- 轮询率
         rate_group = Adw.PreferencesGroup(
-            title="轮询率",
-            description="8K 接收器支持最高 8000 Hz; 高轮询率会增加 CPU 占用",
+            title=_("轮询率"),
+            description=_("8K 接收器支持最高 8000 Hz; 高轮询率会增加 CPU 占用"),
         )
         self.add(rate_group)
 
@@ -49,61 +50,61 @@ class PerformancePage(Adw.PreferencesPage):
             self.rate_buttons[rate] = button
 
         # ---------------------------------------------------- 传感器
-        sensor_group = Adw.PreferencesGroup(title="传感器")
+        sensor_group = Adw.PreferencesGroup(title=_("传感器"))
         self.add(sensor_group)
 
         self.ripple_row = Adw.SwitchRow(
-            title="波纹控制 (Ripple Control)",
-            subtitle="降低无线传输带来的抖动",
+            title=_("波纹控制 (Ripple Control)"),
+            subtitle=_("降低无线传输带来的抖动"),
         )
         self.ripple_row.connect("notify::active", self._on_sensor_switch, "ripple")
         sensor_group.add(self.ripple_row)
 
         self.snap_row = Adw.SwitchRow(
-            title="角度捕捉 (Angle Snapping)",
-            subtitle="让直线移动更平稳",
+            title=_("角度捕捉 (Angle Snapping)"),
+            subtitle=_("让直线移动更平稳"),
         )
         self.snap_row.connect("notify::active", self._on_sensor_switch, "angle_snap")
         sensor_group.add(self.snap_row)
 
         self.sync_row = Adw.SwitchRow(
-            title="运动同步 (Motion Sync)",
-            subtitle="传感器采样与 USB 上报同步",
+            title=_("运动同步 (Motion Sync)"),
+            subtitle=_("传感器采样与 USB 上报同步"),
         )
         self.sync_row.connect("notify::active", self._on_sensor_switch, "motion_sync")
         sensor_group.add(self.sync_row)
 
-        self.lod_row = Adw.ComboRow(title="抬起高度 (LOD)")
+        self.lod_row = Adw.ComboRow(title=_("抬起高度 (LOD)"))
         self.lod_row.set_model(Gtk.StringList.new(["1 mm", "2 mm"]))
         self.lod_row.connect("notify::selected", self._on_lod_changed)
         sensor_group.add(self.lod_row)
 
         # ---------------------------------------------------- 电源
-        power_group = Adw.PreferencesGroup(title="电源管理")
+        power_group = Adw.PreferencesGroup(title=_("电源管理"))
         self.add(power_group)
 
         self.sleep_scale, self.sleep_label = self._slider_row(
             power_group,
-            "休眠时间",
-            "无操作后进入浅睡的时间 (0.5 - 30 分钟)",
+            _("休眠时间"),
+            _("无操作后进入浅睡的时间 (0.5 - 30 分钟)"),
             0.5, 30, 0.5,
             self._on_sleep_changed,
         )
         self.deep_scale, self.deep_label = self._slider_row(
             power_group,
-            "深度休眠",
-            "进入深度省电的时间 (1 - 60 分钟)",
+            _("深度休眠"),
+            _("进入深度省电的时间 (1 - 60 分钟)"),
             1, 60, 1,
             self._on_deep_changed,
         )
 
         # ---------------------------------------------------- 按键响应
-        response_group = Adw.PreferencesGroup(title="按键响应")
+        response_group = Adw.PreferencesGroup(title=_("按键响应"))
         self.add(response_group)
         self.debounce_scale, self.debounce_label = self._slider_row(
             response_group,
-            "按键去抖",
-            "数值越低响应越快 (4 - 50 ms)",
+            _("按键去抖"),
+            _("数值越低响应越快 (4 - 50 ms)"),
             4, 50, 2,
             self._on_debounce_changed,
         )

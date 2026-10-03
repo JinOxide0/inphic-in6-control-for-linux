@@ -10,6 +10,7 @@ from gi.repository import Adw, Gtk
 
 from .. import keys, protocol as P
 from ..config import ButtonBinding
+from ..i18n import _
 from .widgets import ShortcutDialog
 
 # (preset id, 显示名)
@@ -67,7 +68,6 @@ PRESETS: list[tuple[str, str]] = [
 
 SHORTCUT_ITEM = "键盘快捷键…"
 MACRO_ITEM = "宏…"
-ITEMS = [label for _, label in PRESETS] + [SHORTCUT_ITEM, MACRO_ITEM]
 
 
 class ButtonsPage(Adw.PreferencesPage):
@@ -78,14 +78,16 @@ class ButtonsPage(Adw.PreferencesPage):
         self.rows: list[tuple[int, int, Adw.ActionRow, Gtk.DropDown]] = []
 
         group = Adw.PreferencesGroup(
-            title="鼠标按键",
-            description="修改后立即写入鼠标",
+            title=_("鼠标按键"),
+            description=_("修改后立即写入鼠标"),
         )
         self.add(group)
 
+        items = [_(label) for _key, label in PRESETS] + [_(SHORTCUT_ITEM), _(MACRO_ITEM)]
+
         for ui_index, (slot_index, name) in enumerate(P.USER_BUTTONS):
-            row = Adw.ActionRow(title=name)
-            dropdown = Gtk.DropDown.new_from_strings(ITEMS)
+            row = Adw.ActionRow(title=_(name))
+            dropdown = Gtk.DropDown.new_from_strings(items)
             dropdown.set_valign(Gtk.Align.CENTER)
             dropdown.connect(
                 "notify::selected", self._on_selected, slot_index, ui_index, row, dropdown
@@ -94,18 +96,18 @@ class ButtonsPage(Adw.PreferencesPage):
             group.add(row)
             self.rows.append((slot_index, ui_index, row, dropdown))
 
-        note = Adw.PreferencesGroup(title="说明")
+        note = Adw.PreferencesGroup(title=_("说明"))
         self.add(note)
         note.add(
             Adw.ActionRow(
-                title="宏",
-                subtitle="选择「宏…」即可为按键录制键盘/移动宏",
+                title=_("宏"),
+                subtitle=_("选择「宏…」即可为按键录制键盘/移动宏"),
             )
         )
         note.add(
             Adw.ActionRow(
-                title="其余 13 个功能槽位保持默认",
-                subtitle="DPI 键 / 模式键 / 滚轮等由固件固定处理",
+                title=_("其余 13 个功能槽位保持默认"),
+                subtitle=_("DPI 键 / 模式键 / 滚轮等由固件固定处理"),
             )
         )
 
@@ -130,7 +132,7 @@ class ButtonsPage(Adw.PreferencesPage):
 
         preset = PRESETS[selected][0]
         cfg.buttons[slot_index] = ButtonBinding(kind="preset", preset=preset)
-        row.set_subtitle(PRESETS[selected][1])
+        row.set_subtitle(_(PRESETS[selected][1]))
         self.window.push_buttons()
 
     def _pick_macro(self, ui_index: int, row: Adw.ActionRow, dropdown: Gtk.DropDown) -> None:
@@ -155,7 +157,11 @@ class ButtonsPage(Adw.PreferencesPage):
                 self.window.config.buttons[slot_index] = ButtonBinding(
                     kind="shortcut", mods=mods, usage=usage
                 )
-                row.set_subtitle("键盘: " + keys.describe_shortcut(mods, usage))
+                row.set_subtitle(
+                    _("键盘: {shortcut}").format(
+                        shortcut=keys.describe_shortcut(mods, usage)
+                    )
+                )
                 self.window.push_buttons()
             else:
                 self.refresh()
@@ -174,17 +180,23 @@ class ButtonsPage(Adw.PreferencesPage):
             binding = cfg.buttons[slot_index]
             if binding.kind == "shortcut":
                 dropdown.set_selected(len(PRESETS))
-                row.set_subtitle("键盘: " + keys.describe_shortcut(binding.mods, binding.usage))
+                row.set_subtitle(
+                    _("键盘: {shortcut}").format(
+                        shortcut=keys.describe_shortcut(binding.mods, binding.usage)
+                    )
+                )
             elif binding.kind == "macro":
                 dropdown.set_selected(len(PRESETS) + 1)
                 macro = cfg.macros.get(str(binding.macro_id))
                 if macro and macro.actions:
-                    row.set_subtitle(f"宏: {len(macro.actions)} 个动作")
+                    row.set_subtitle(
+                        _("宏: {count} 个动作").format(count=len(macro.actions))
+                    )
                 else:
-                    row.set_subtitle("宏: 未编辑")
+                    row.set_subtitle(_("宏: 未编辑"))
             else:
                 ids = [preset for preset, _ in PRESETS]
                 index = ids.index(binding.preset) if binding.preset in ids else 0
                 dropdown.set_selected(index)
-                row.set_subtitle(PRESETS[index][1])
+                row.set_subtitle(_(PRESETS[index][1]))
         self._syncing = False

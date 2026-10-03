@@ -6,6 +6,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from .i18n import _
 from .protocol import REPORT_ID, frame_packet
 
 VENDOR_ID = 0x1D57          # Inphic / Xenta
@@ -31,7 +32,7 @@ class DeviceInfo:
 
     @property
     def label(self) -> str:
-        return KNOWN_PRODUCTS.get(self.pid, self.product or self.name or "Inphic 设备")
+        return _(KNOWN_PRODUCTS.get(self.pid, self.product or self.name or "Inphic 设备"))
 
     @property
     def is_wireless(self) -> bool:

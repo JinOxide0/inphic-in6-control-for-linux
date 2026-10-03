@@ -8,8 +8,9 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 
-from gi.repository import Adw, Gdk, Gio, Gtk
+from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
+from . import i18n
 from .config import Config
 from .device_manager import DeviceManager
 from .ui.window import MainWindow
@@ -21,6 +22,7 @@ class InphicControlApp(Adw.Application):
     def __init__(self):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.config = Config.load()
+        i18n.set_language(self.config.language)
         self.manager = DeviceManager()
         self.window: MainWindow | None = None
 
@@ -46,6 +48,23 @@ class InphicControlApp(Adw.Application):
     def do_shutdown(self) -> None:
         self.manager.stop()
         Adw.Application.do_shutdown(self)
+
+    # ------------------------------------------------------------ 语言
+    def apply_language(self, preference: str) -> None:
+        """切换界面语言 (字符串在构建期生效, 因此重建窗口)."""
+        self.config.language = preference
+        self.config.save()
+        i18n.set_language(preference)
+        GLib.idle_add(self._rebuild_window)
+
+    def _rebuild_window(self) -> bool:
+        old = self.window
+        self.window = MainWindow(self.config, self.manager, application=self)
+        self.window.present()
+        if old is not None:
+            old.destroy()
+            self.window.toast(i18n._("语言已切换"))
+        return False
 
 
 def main(argv: list[str] | None = None) -> int:

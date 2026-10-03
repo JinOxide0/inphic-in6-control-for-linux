@@ -81,6 +81,9 @@ class Config:
     # 宏 (键 = 槽位字符串 "1".."5")
     macros: dict[str, MacroDef] = field(default_factory=dict)
 
+    # 界面语言: auto(跟随系统) / zh / en
+    language: str = "auto"
+
     # ------------------------------------------------------------ 编码
     def active_mask(self) -> int:
         mask = 0

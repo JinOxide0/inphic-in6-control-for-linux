@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NAME="inphic-control"
-VERSION="0.3.0"
+VERSION="0.4.0"
 TOPDIR="${HOME}/rpmbuild"
 
 echo "==> 准备源码包"

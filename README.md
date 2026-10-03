@@ -1,7 +1,10 @@
 # Inphic Control
 
+[简体中文](README.md) | [English](README.en.md)
+
 为 **Inphic IN6（三模 / 8K 接收器）** 打造的 Linux 控制面板。
 现代深色界面（GTK4 + libadwaita），直接通过厂商 HID 接口通信，无需 Windows 驱动。
+界面支持 **简体中文 / English** 双语（默认跟随系统，可在「关于 → 界面语言」中切换）。
 
 ![界面预览](docs/preview.png)
 
@@ -20,11 +23,12 @@
 | 电量 | 实时电量与充电状态 |
 | 配置持久化 | 设置保存于 `~/.config/inphic-control/config.json` |
 | 休眠重试 | 鼠标休眠时命令自动按 1s/6s/21s 递进重试，唤醒后自动生效 |
+| 界面语言 | 简体中文 / English，默认跟随系统，可在「关于」页切换 |
 
 ## 安装
 
 ```bash
-sudo dnf install ./inphic-control-0.3.0-1.*.noarch.rpm
+sudo dnf install ./inphic-control-0.4.0-1.*.noarch.rpm
 ```
 
 安装后 **重新插拔一次接收器**（或注销重登），udev 规则会授予当前登录用户
@@ -98,8 +102,8 @@ RPM 构建依赖 `rpm-build`，DEB 依赖 `dpkg-dev`、`debhelper`，Flatpak 依
 
 ## 已知限制
 
-- **宏编辑暂未支持**：宏指令为 111/131 字节，需要分包写入，官方原生驱动
-  的分包格式尚未完全弄清。按键可以正常绑定到鼠标/键盘/多媒体功能。
+- **宏仅支持单键与鼠标移动**：宏动作可录制键盘单键（按下/抬起）和鼠标移动；
+  修饰键组合（Ctrl+X 等）暂不能在宏内使用，可改用「键盘快捷键…」绑定。
 - **不支持读取鼠标中的当前设置**：官方 Web 驱动本身也只写不读，本软件采用
   相同的策略；界面显示的是本地保存的配置。
 - 部分设置（如 DPI）写入后立即生效，不需要点击保存。
