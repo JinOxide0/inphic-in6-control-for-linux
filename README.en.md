@@ -113,10 +113,13 @@ projects:
 
 ## Known limitations
 
-- **Macros support single keys and mouse movement only**: macro actions can
-  record a single keyboard key (down/up) and mouse movement; modifier combos
-  (Ctrl+X, etc.) cannot be used inside macros yet — use “Keyboard shortcut…”
-  binding instead.
+> Macros are **fully supported**: single keyboard keys (down/up), mouse movement,
+> 4 trigger modes and one macro per button. The notes below only describe their
+> boundaries.
+
+- **No key combos inside macros**: due to the protocol encoding, each macro action
+  can only record a **single** key (A, F1, arrows, …); for combos like Ctrl+X use a
+  “Keyboard shortcut…” binding on a button instead.
 - **The app cannot read the current settings from the mouse**: the official Web
   driver is write-only as well; the UI shows the locally saved configuration.
 - Some settings (e.g. DPI) apply immediately — no save button needed.
